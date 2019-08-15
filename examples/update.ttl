@@ -1,0 +1,42 @@
+@base <http://example.org/pipeline>.
+@prefix code: <https://code.described.at/>.
+@prefix p: <https://pipeline.described.at/>.
+
+<#pipeline> a p:Pipeline, p:Readable;
+  p:variables [
+    p:variable [ a p:Variable;
+      p:name "filename";
+      p:value "examples/update.ttl"
+    ]
+  ];
+  p:steps [
+    p:stepList ( <#readFile> <#parse> <#update> <#serialize> )
+  ].
+
+<#readFile> a p:Step;
+  code:implementedBy [ a code:EcmaScript;
+    code:link <node:fs#createReadStream>
+  ];
+  code:arguments ( "${filename}"^^code:EcmaScriptTemplateLiteral ).
+
+<#parse> a p:Step;
+  code:implementedBy [ a code:EcmaScript;
+    code:link <node:barnard59-formats/n3#parse>
+  ].
+
+<#update> a p:Step;
+  code:implementedBy [ a code:EcmaScript;
+    code:link <file:..#update>
+  ];
+  code:arguments [
+    code:name "queries";
+    code:value (
+      """DELETE { ?s ?p "examples/update.ttl" } INSERT { ?s ?p "examples/outdated.ttl" } WHERE { ?s ?p "examples/update.ttl" } """
+      """DELETE { ?s ?p "examples/outdated.ttl" } INSERT { ?s ?p "examples/updated.ttl" } WHERE { ?s ?p "examples/outdated.ttl" } """
+    )
+  ].
+
+<#serialize> a p:Step;
+  code:implementedBy [ a code:EcmaScript;
+    code:link <node:barnard59-formats/ntriples#serialize>
+  ].
