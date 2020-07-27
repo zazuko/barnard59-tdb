@@ -1,6 +1,6 @@
 {
   "name": "barnard59-tdb",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "SPARQL data processing support for Barnard59 Linked Data pipelines using Jena TDB",
   "main": "index.js",
   "scripts": {
